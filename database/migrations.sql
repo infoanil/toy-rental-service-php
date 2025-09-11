@@ -1,0 +1,124 @@
+-- Create schema for Toy Rental API
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  email VARCHAR(160) NOT NULL UNIQUE,
+  phone VARCHAR(30) NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  role ENUM('customer','admin') NOT NULL DEFAULT 'customer',
+  created_at DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS addresses (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  line1 VARCHAR(255) NOT NULL,
+  city VARCHAR(120) NOT NULL,
+  state VARCHAR(120) NOT NULL,
+  pincode VARCHAR(10) NOT NULL,
+  is_default TINYINT(1) NOT NULL DEFAULT 0,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS categories (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  slug VARCHAR(120) NOT NULL UNIQUE,
+  parent_id INT NULL,
+  FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS products (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(200) NOT NULL,
+  slug VARCHAR(160) NOT NULL UNIQUE,
+  category_id INT NOT NULL,
+  brand VARCHAR(120) NULL,
+  age_min INT NULL,
+  age_max INT NULL,
+  description TEXT,
+  images_json JSON NULL,
+  active TINYINT(1) NOT NULL DEFAULT 1,
+  FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS product_plans (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  product_id INT NOT NULL,
+  duration_days INT NOT NULL,
+  price_inr INT NOT NULL,
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS inventory_units (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  product_id INT NOT NULL,
+  code VARCHAR(80) NOT NULL UNIQUE,
+  status ENUM('AVAILABLE','RESERVED','RENTED','MAINTENANCE') NOT NULL DEFAULT 'AVAILABLE',
+  last_sanitized_on DATE NULL,
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS availability_blocks (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  inventory_unit_id INT NOT NULL,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  type ENUM('RENTAL','HOLD','MAINTENANCE') NOT NULL,
+  order_id INT NULL,
+  INDEX idx_block (inventory_unit_id, start_date, end_date),
+  FOREIGN KEY (inventory_unit_id) REFERENCES inventory_units(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS carts (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL UNIQUE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS cart_items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  cart_id INT NOT NULL,
+  product_id INT NOT NULL,
+  plan_id INT NOT NULL,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE,
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+  FOREIGN KEY (plan_id) REFERENCES product_plans(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS orders (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  address_id INT NOT NULL,
+  status ENUM('PLACED','CONFIRMED','DELIVERED','CLOSED','CANCELLED') NOT NULL DEFAULT 'PLACED',
+  payment_mode ENUM('COD') NOT NULL DEFAULT 'COD',
+  delivery_fee INT NOT NULL DEFAULT 0,
+  total_due INT NOT NULL DEFAULT 0,
+  placed_at DATETIME NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (address_id) REFERENCES addresses(id) ON DELETE RESTRICT
+);
+
+CREATE TABLE IF NOT EXISTS order_items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  order_id INT NOT NULL,
+  product_id INT NOT NULL,
+  plan_id INT NOT NULL,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  inventory_unit_id INT NULL,
+  item_price INT NOT NULL,
+  FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+  FOREIGN KEY (plan_id) REFERENCES product_plans(id) ON DELETE RESTRICT,
+  FOREIGN KEY (inventory_unit_id) REFERENCES inventory_units(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS pincodes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  pincode VARCHAR(10) NOT NULL UNIQUE,
+  serviceable TINYINT(1) NOT NULL DEFAULT 1,
+  delivery_fee INT NOT NULL DEFAULT 0
+);

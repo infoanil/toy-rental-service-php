@@ -1,0 +1,11 @@
+{
+  "name": "anil/toy-rental-core-php",
+  "description": "Laravel-like structure in core PHP for a Toy Rental API",
+  "type": "project",
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  }
+}

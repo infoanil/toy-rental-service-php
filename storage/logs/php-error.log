@@ -1,0 +1,28 @@
+[11-Sep-2025 09:21:28 UTC] [2025-09-11T09:21:28+00:00] Too few arguments to function App\Controllers\CatalogController::__construct(), 0 passed in /srv/code/chirag gohil/toy-rental-core-php/src/Core/Container.php on line 13 and exactly 1 expected in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/CatalogController.php:8
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Container.php(13): App\Controllers\CatalogController->__construct()
+#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(40): App\Core\Container->make()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(20): App\Core\Router->resolve()
+#3 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(41): App\Core\Router->dispatch()
+#4 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#5 {main}
+
+[11-Sep-2025 09:22:49 UTC] [2025-09-11T09:22:49+00:00] Too few arguments to function App\Controllers\CatalogController::__construct(), 0 passed in /srv/code/chirag gohil/toy-rental-core-php/src/Core/Container.php on line 13 and exactly 1 expected in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/CatalogController.php:8
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Container.php(13): App\Controllers\CatalogController->__construct()
+#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(40): App\Core\Container->make()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(20): App\Core\Router->resolve()
+#3 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(41): App\Core\Router->dispatch()
+#4 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#5 {main}
+
+[11-Sep-2025 09:24:34 UTC] [2025-09-11T09:24:34+00:00] Call to undefined function App\Database\env() in /srv/code/chirag gohil/toy-rental-core-php/src/Database/Connection.php:10
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/CatalogController.php(11): App\Database\Connection->pdo()
+#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(41): App\Controllers\CatalogController->categories()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(22): App\Core\Router->App\Core\{closure}()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(30): App\Core\Router->App\Core\{closure}()
+#4 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(41): App\Core\Router->dispatch()
+#5 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#6 {main}
+
