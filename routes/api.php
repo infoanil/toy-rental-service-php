@@ -1,6 +1,6 @@
 <?php
 use App\Core\{Router,Request,Response};
-use App\Controllers\{AuthController,CatalogController,AvailabilityController,CartController,CheckoutController,OrderController,AdminController};
+use App\Controllers\{AuthController,CatalogController,AvailabilityController,ProfileController,CartController,CheckoutController,OrderController,AdminController};
 use App\Middleware\Auth;
 
 $jwtAuth = Auth::class;
@@ -13,6 +13,9 @@ $router->add('GET', '/api/products',      CatalogController::class.'@products');
 $router->add('GET', '/api/products/{id}', CatalogController::class.'@product');
 $router->add('GET', '/api/products/{id}/plans', CatalogController::class.'@plans');
 $router->add('GET', '/api/products/{id}/availability', AvailabilityController::class.'@check');
+$router->add('POST', '/api/me/update', ProfileController::class.'@update', [$jwtAuth]);
+$router->add('POST', '/api/upload/avatar', ProfileController::class.'@uploadAvatar', [$jwtAuth]);
+
 
 // Authenticated
 $router->add('GET', '/api/me',            AuthController::class.'@me',               [$jwtAuth]);
@@ -27,6 +30,26 @@ $router->add('GET', '/api/orders/{id}',   OrderController::class.'@show',       
 $router->add('POST','/api/orders/{id}/cancel', OrderController::class.'@cancel',     [$jwtAuth]);
 
 // Admin
+// Admin: Products CRUD
+$router->add('GET',    '/api/admin/products',               App\Controllers\AdminProductController::class.'@index',        [$jwtAuth]);
+$router->add('POST',   '/api/admin/products',               App\Controllers\AdminProductController::class.'@store',        [$jwtAuth]);
+$router->add('GET',    '/api/admin/products/{id}',          App\Controllers\AdminProductController::class.'@show',         [$jwtAuth]);
+$router->add('PUT',    '/api/admin/products/{id}',          App\Controllers\AdminProductController::class.'@update',       [$jwtAuth]);
+$router->add('DELETE', '/api/admin/products/{id}',          App\Controllers\AdminProductController::class.'@destroy',      [$jwtAuth]);
+
+// Admin: product image upload & manage
+$router->add('POST',   '/api/admin/products/{id}/images',   App\Controllers\AdminProductController::class.'@addImages',   [$jwtAuth]);  // multipart images[]
+$router->add('DELETE', '/api/admin/products/{id}/images',   App\Controllers\AdminProductController::class.'@deleteImage', [$jwtAuth]);  // ?path=/uploads/products/xxx.jpg
+
+// Admin: Plans CRUD for a product
+$router->add('POST',   '/api/admin/products/{id}/plans',    App\Controllers\AdminProductController::class.'@addPlan',      [$jwtAuth]);
+$router->add('PUT',    '/api/admin/plans/{planId}',         App\Controllers\AdminProductController::class.'@updatePlan',   [$jwtAuth]);
+$router->add('DELETE', '/api/admin/plans/{planId}',         App\Controllers\AdminProductController::class.'@deletePlan',   [$jwtAuth]);
+
+// Admin: Inventory Units
+$router->add('POST',   '/api/admin/products/{id}/units',    App\Controllers\AdminProductController::class.'@addUnit',      [$jwtAuth]);
+$router->add('DELETE', '/api/admin/units/{unitId}',         App\Controllers\AdminProductController::class.'@deleteUnit',   [$jwtAuth]);
+
 $router->add('GET', '/api/admin/orders',                AdminController::class.'@orders',         [$jwtAuth]);
 $router->add('POST','/api/admin/orders/{id}/confirm',   AdminController::class.'@confirm',        [$jwtAuth]);
 $router->add('POST','/api/admin/orders/{id}/delivered', AdminController::class.'@markDelivered',  [$jwtAuth]);

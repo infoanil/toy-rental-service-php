@@ -122,3 +122,14 @@ CREATE TABLE IF NOT EXISTS pincodes (
   serviceable TINYINT(1) NOT NULL DEFAULT 1,
   delivery_fee INT NOT NULL DEFAULT 0
 );
+
+ALTER TABLE users
+  ADD COLUMN city     VARCHAR(120) NULL AFTER phone,
+  ADD COLUMN state    VARCHAR(120) NULL AFTER city,
+  ADD COLUMN zip      VARCHAR(20)  NULL AFTER state,
+  ADD COLUMN address  TEXT         NULL AFTER zip,
+  ADD COLUMN avatar   VARCHAR(255) NULL AFTER address;
+
+ALTER TABLE products
+  ADD COLUMN actual_price   INT NOT NULL DEFAULT 0 AFTER description,
+  ADD COLUMN discount_price INT NULL AFTER actual_price;
