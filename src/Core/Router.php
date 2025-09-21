@@ -33,13 +33,38 @@ class Router {
         return Response::json(['message'=>'Not Found'],404);
     }
 
-    private function resolve($action): Closure {
-        if (is_callable($action)) return $action(...);
-        if (is_string($action) && str_contains($action,'@')) {
-            [$class,$method] = explode('@',$action,2);
-            $instance = $this->c->make($class);
-            return fn($req) => $instance->$method($req);
-        }
-        return fn($req)=>Response::json(['message'=>'Invalid route handler'],500);
+private function resolve($action): \Closure {
+    // 1) Raw closure
+    if ($action instanceof \Closure) return $action;
+
+    // 2) ["Class","method"] callable arrays
+    if (is_array($action) && is_callable($action)) {
+        return fn($req) => \call_user_func($action, $req);
     }
+
+    // 3) already-callable (function name / invokable object)
+    if (is_callable($action)) {
+        return $action(...);
+    }
+
+    // 4) "FQCN@method" string (e.g., App\Controllers\AuthController@me)
+    if (is_string($action) && \str_contains($action, '@')) {
+        [$class, $method] = \explode('@', $action, 2);
+        $instance = $this->c->make($class);
+        return fn($req) => $instance->$method($req);
+    }
+
+    // 5) Plain class name string with __invoke middleware (e.g., App\Middleware\Auth::class)
+    if (is_string($action) && \class_exists($action)) {
+        $instance = $this->c->make($action);
+        if (\method_exists($instance, '__invoke')) {
+            return fn($req, $next = null) => $instance($req, $next);
+        }
+    }
+
+    // 6) Log for debugging
+    error_log('[Router] Invalid route handler: '.print_r($action, true));
+    return fn($req) => \App\Core\Response::json(['message' => 'Invalid route handler'], 500);
+}
+
 }
