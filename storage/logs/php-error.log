@@ -1,28 +1,293 @@
-[11-Sep-2025 09:21:28 UTC] [2025-09-11T09:21:28+00:00] Too few arguments to function App\Controllers\CatalogController::__construct(), 0 passed in /srv/code/chirag gohil/toy-rental-core-php/src/Core/Container.php on line 13 and exactly 1 expected in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/CatalogController.php:8
+[12-Sep-2025 12:46:46 UTC] [Router] Invalid route handler type: string value=App\Middleware\Auth
+[12-Sep-2025 12:47:14 UTC] [Router] Invalid route handler type: string value=App\Middleware\Auth
+[12-Sep-2025 12:56:08 UTC] [Router] Invalid route handler type: string value=App\Middleware\Auth
+[12-Sep-2025 12:57:25 UTC] PHP Warning:  Trying to access array offset on value of type null in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AuthController.php on line 61
+[12-Sep-2025 12:57:40 UTC] PHP Warning:  Trying to access array offset on value of type null in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AuthController.php on line 61
+[12-Sep-2025 13:00:46 UTC] PHP Warning:  Trying to access array offset on value of type null in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AuthController.php on line 61
+[25-Sep-2025 07:04:18 UTC] [2025-09-25T07:04:18+00:00] SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`toy_rental`.`products`, CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE) in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:87
 Stack trace:
-#0 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Container.php(13): App\Controllers\CatalogController->__construct()
-#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(40): App\Core\Container->make()
-#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(20): App\Core\Router->resolve()
-#3 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(41): App\Core\Router->dispatch()
-#4 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
-#5 {main}
-
-[11-Sep-2025 09:22:49 UTC] [2025-09-11T09:22:49+00:00] Too few arguments to function App\Controllers\CatalogController::__construct(), 0 passed in /srv/code/chirag gohil/toy-rental-core-php/src/Core/Container.php on line 13 and exactly 1 expected in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/CatalogController.php:8
-Stack trace:
-#0 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Container.php(13): App\Controllers\CatalogController->__construct()
-#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(40): App\Core\Container->make()
-#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(20): App\Core\Router->resolve()
-#3 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(41): App\Core\Router->dispatch()
-#4 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
-#5 {main}
-
-[11-Sep-2025 09:24:34 UTC] [2025-09-11T09:24:34+00:00] Call to undefined function App\Database\env() in /srv/code/chirag gohil/toy-rental-core-php/src/Database/Connection.php:10
-Stack trace:
-#0 /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/CatalogController.php(11): App\Database\Connection->pdo()
-#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(41): App\Controllers\CatalogController->categories()
+#0 /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php(87): PDOStatement->execute()
+#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(54): App\Controllers\AdminProductController->store()
 #2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(22): App\Core\Router->App\Core\{closure}()
-#3 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(30): App\Core\Router->App\Core\{closure}()
-#4 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(41): App\Core\Router->dispatch()
-#5 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
-#6 {main}
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Middleware/Auth.php(16): App\Core\Router->App\Core\{closure}()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(61): App\Middleware\Auth->__invoke()
+#5 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(27): App\Core\Router->App\Core\{closure}()
+#6 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(30): App\Core\Router->App\Core\{closure}()
+#7 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#8 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#9 {main}
+
+[25-Sep-2025 07:10:13 UTC] [2025-09-25T07:10:13+00:00] SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`toy_rental`.`products`, CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE) in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:87
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php(87): PDOStatement->execute()
+#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(54): App\Controllers\AdminProductController->store()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(22): App\Core\Router->App\Core\{closure}()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Middleware/Auth.php(16): App\Core\Router->App\Core\{closure}()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(61): App\Middleware\Auth->__invoke()
+#5 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(27): App\Core\Router->App\Core\{closure}()
+#6 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(30): App\Core\Router->App\Core\{closure}()
+#7 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#8 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#9 {main}
+
+[25-Sep-2025 07:11:03 UTC] [2025-09-25T07:11:03+00:00] SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`toy_rental`.`products`, CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE) in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:87
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php(87): PDOStatement->execute()
+#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(54): App\Controllers\AdminProductController->store()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(22): App\Core\Router->App\Core\{closure}()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Middleware/Auth.php(16): App\Core\Router->App\Core\{closure}()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(61): App\Middleware\Auth->__invoke()
+#5 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(27): App\Core\Router->App\Core\{closure}()
+#6 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(30): App\Core\Router->App\Core\{closure}()
+#7 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#8 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#9 {main}
+
+[25-Sep-2025 07:11:18 UTC] [2025-09-25T07:11:18+00:00] SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`toy_rental`.`products`, CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE) in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:87
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php(87): PDOStatement->execute()
+#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(54): App\Controllers\AdminProductController->store()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(22): App\Core\Router->App\Core\{closure}()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Middleware/Auth.php(16): App\Core\Router->App\Core\{closure}()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(61): App\Middleware\Auth->__invoke()
+#5 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(27): App\Core\Router->App\Core\{closure}()
+#6 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(30): App\Core\Router->App\Core\{closure}()
+#7 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#8 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#9 {main}
+
+[25-Sep-2025 07:13:02 UTC] [2025-09-25T07:13:02+00:00] SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`toy_rental`.`products`, CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE) in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:87
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php(87): PDOStatement->execute()
+#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(54): App\Controllers\AdminProductController->store()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(22): App\Core\Router->App\Core\{closure}()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Middleware/Auth.php(16): App\Core\Router->App\Core\{closure}()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(61): App\Middleware\Auth->__invoke()
+#5 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(27): App\Core\Router->App\Core\{closure}()
+#6 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(30): App\Core\Router->App\Core\{closure}()
+#7 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#8 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#9 {main}
+
+[25-Sep-2025 07:13:20 UTC] [2025-09-25T07:13:20+00:00] SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`toy_rental`.`products`, CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE) in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:87
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php(87): PDOStatement->execute()
+#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(54): App\Controllers\AdminProductController->store()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(22): App\Core\Router->App\Core\{closure}()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Middleware/Auth.php(16): App\Core\Router->App\Core\{closure}()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(61): App\Middleware\Auth->__invoke()
+#5 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(27): App\Core\Router->App\Core\{closure}()
+#6 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(30): App\Core\Router->App\Core\{closure}()
+#7 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#8 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#9 {main}
+
+[25-Sep-2025 07:13:22 UTC] [2025-09-25T07:13:22+00:00] SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`toy_rental`.`products`, CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE) in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:87
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php(87): PDOStatement->execute()
+#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(54): App\Controllers\AdminProductController->store()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(22): App\Core\Router->App\Core\{closure}()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Middleware/Auth.php(16): App\Core\Router->App\Core\{closure}()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(61): App\Middleware\Auth->__invoke()
+#5 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(27): App\Core\Router->App\Core\{closure}()
+#6 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(30): App\Core\Router->App\Core\{closure}()
+#7 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#8 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#9 {main}
+
+[25-Sep-2025 07:13:34 UTC] [2025-09-25T07:13:34+00:00] SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`toy_rental`.`products`, CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE) in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:87
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php(87): PDOStatement->execute()
+#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(54): App\Controllers\AdminProductController->store()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(22): App\Core\Router->App\Core\{closure}()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Middleware/Auth.php(16): App\Core\Router->App\Core\{closure}()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(61): App\Middleware\Auth->__invoke()
+#5 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(27): App\Core\Router->App\Core\{closure}()
+#6 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(30): App\Core\Router->App\Core\{closure}()
+#7 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#8 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#9 {main}
+
+[25-Sep-2025 07:18:09 UTC] [2025-09-25T07:18:09+00:00] syntax error, unexpected identifier "gesJson" in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:80
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/vendor/composer/ClassLoader.php(432): Composer\Autoload\ClassLoader::Composer\Autoload\{closure}()
+#1 [internal function]: Composer\Autoload\ClassLoader->loadClass()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Container.php(34): class_exists()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(53): App\Core\Container->make()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(20): App\Core\Router->resolve()
+#5 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#6 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#7 {main}
+
+[25-Sep-2025 07:19:28 UTC] [2025-09-25T07:19:28+00:00] syntax error, unexpected identifier "gesJson" in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:80
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/vendor/composer/ClassLoader.php(432): Composer\Autoload\ClassLoader::Composer\Autoload\{closure}()
+#1 [internal function]: Composer\Autoload\ClassLoader->loadClass()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Container.php(34): class_exists()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(53): App\Core\Container->make()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(20): App\Core\Router->resolve()
+#5 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#6 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#7 {main}
+
+[25-Sep-2025 07:20:47 UTC] [2025-09-25T07:20:47+00:00] syntax error, unexpected identifier "gesJson" in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:80
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/vendor/composer/ClassLoader.php(432): Composer\Autoload\ClassLoader::Composer\Autoload\{closure}()
+#1 [internal function]: Composer\Autoload\ClassLoader->loadClass()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Container.php(34): class_exists()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(53): App\Core\Container->make()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(20): App\Core\Router->resolve()
+#5 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#6 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#7 {main}
+
+[25-Sep-2025 07:21:33 UTC] [2025-09-25T07:21:33+00:00] syntax error, unexpected identifier "gesJson" in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:80
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/vendor/composer/ClassLoader.php(432): Composer\Autoload\ClassLoader::Composer\Autoload\{closure}()
+#1 [internal function]: Composer\Autoload\ClassLoader->loadClass()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Container.php(34): class_exists()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(53): App\Core\Container->make()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(20): App\Core\Router->resolve()
+#5 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#6 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#7 {main}
+
+[25-Sep-2025 07:22:12 UTC] [2025-09-25T07:22:12+00:00] syntax error, unexpected identifier "gesJson" in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:80
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/vendor/composer/ClassLoader.php(432): Composer\Autoload\ClassLoader::Composer\Autoload\{closure}()
+#1 [internal function]: Composer\Autoload\ClassLoader->loadClass()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Container.php(34): class_exists()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(53): App\Core\Container->make()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(20): App\Core\Router->resolve()
+#5 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#6 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#7 {main}
+
+[25-Sep-2025 07:22:19 UTC] [2025-09-25T07:22:19+00:00] syntax error, unexpected identifier "gesJson" in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:80
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/vendor/composer/ClassLoader.php(432): Composer\Autoload\ClassLoader::Composer\Autoload\{closure}()
+#1 [internal function]: Composer\Autoload\ClassLoader->loadClass()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Container.php(34): class_exists()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(53): App\Core\Container->make()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(20): App\Core\Router->resolve()
+#5 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#6 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#7 {main}
+
+[25-Sep-2025 07:24:06 UTC] [2025-09-25T07:24:06+00:00] SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`toy_rental`.`products`, CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE) in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:87
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php(87): PDOStatement->execute()
+#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(54): App\Controllers\AdminProductController->store()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(22): App\Core\Router->App\Core\{closure}()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Middleware/Auth.php(16): App\Core\Router->App\Core\{closure}()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(61): App\Middleware\Auth->__invoke()
+#5 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(27): App\Core\Router->App\Core\{closure}()
+#6 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(30): App\Core\Router->App\Core\{closure}()
+#7 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#8 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#9 {main}
+
+[25-Sep-2025 07:25:46 UTC] [2025-09-25T07:25:46+00:00] SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`toy_rental`.`products`, CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE) in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:87
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php(87): PDOStatement->execute()
+#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(54): App\Controllers\AdminProductController->store()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(22): App\Core\Router->App\Core\{closure}()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Middleware/Auth.php(16): App\Core\Router->App\Core\{closure}()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(61): App\Middleware\Auth->__invoke()
+#5 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(27): App\Core\Router->App\Core\{closure}()
+#6 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(30): App\Core\Router->App\Core\{closure}()
+#7 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#8 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#9 {main}
+
+[25-Sep-2025 07:27:14 UTC] [2025-09-25T07:27:14+00:00] SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`toy_rental`.`products`, CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE) in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:93
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php(93): PDOStatement->execute()
+#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(54): App\Controllers\AdminProductController->store()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(22): App\Core\Router->App\Core\{closure}()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Middleware/Auth.php(16): App\Core\Router->App\Core\{closure}()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(61): App\Middleware\Auth->__invoke()
+#5 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(27): App\Core\Router->App\Core\{closure}()
+#6 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(30): App\Core\Router->App\Core\{closure}()
+#7 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#8 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#9 {main}
+
+[25-Sep-2025 07:33:13 UTC] [2025-09-25T07:33:13+00:00] SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`toy_rental`.`products`, CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE) in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:105
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php(105): PDOStatement->execute()
+#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(54): App\Controllers\AdminProductController->store()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(22): App\Core\Router->App\Core\{closure}()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Middleware/Auth.php(16): App\Core\Router->App\Core\{closure}()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(61): App\Middleware\Auth->__invoke()
+#5 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(27): App\Core\Router->App\Core\{closure}()
+#6 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(30): App\Core\Router->App\Core\{closure}()
+#7 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#8 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#9 {main}
+
+[25-Sep-2025 07:34:18 UTC] [2025-09-25T07:34:18+00:00] SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`toy_rental`.`products`, CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE) in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:105
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php(105): PDOStatement->execute()
+#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(54): App\Controllers\AdminProductController->store()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(22): App\Core\Router->App\Core\{closure}()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Middleware/Auth.php(16): App\Core\Router->App\Core\{closure}()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(61): App\Middleware\Auth->__invoke()
+#5 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(27): App\Core\Router->App\Core\{closure}()
+#6 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(30): App\Core\Router->App\Core\{closure}()
+#7 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#8 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#9 {main}
+
+[25-Sep-2025 07:35:19 UTC] [2025-09-25T07:35:19+00:00] SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`toy_rental`.`products`, CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE) in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:105
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php(105): PDOStatement->execute()
+#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(54): App\Controllers\AdminProductController->store()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(22): App\Core\Router->App\Core\{closure}()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Middleware/Auth.php(16): App\Core\Router->App\Core\{closure}()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(61): App\Middleware\Auth->__invoke()
+#5 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(27): App\Core\Router->App\Core\{closure}()
+#6 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(30): App\Core\Router->App\Core\{closure}()
+#7 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#8 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#9 {main}
+
+[25-Sep-2025 07:48:18 UTC] [2025-09-25T07:48:18+00:00] SQLSTATE[42S22]: Column not found: 1054 Unknown column 'rental_options_json' in 'field list' in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:123
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php(123): PDO->prepare()
+#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(54): App\Controllers\AdminProductController->store()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(22): App\Core\Router->App\Core\{closure}()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Middleware/Auth.php(16): App\Core\Router->App\Core\{closure}()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(61): App\Middleware\Auth->__invoke()
+#5 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(27): App\Core\Router->App\Core\{closure}()
+#6 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(30): App\Core\Router->App\Core\{closure}()
+#7 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#8 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#9 {main}
+
+[25-Sep-2025 07:48:35 UTC] [2025-09-25T07:48:35+00:00] SQLSTATE[42S22]: Column not found: 1054 Unknown column 'rental_options_json' in 'field list' in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:123
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php(123): PDO->prepare()
+#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(54): App\Controllers\AdminProductController->store()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(22): App\Core\Router->App\Core\{closure}()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Middleware/Auth.php(16): App\Core\Router->App\Core\{closure}()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(61): App\Middleware\Auth->__invoke()
+#5 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(27): App\Core\Router->App\Core\{closure}()
+#6 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(30): App\Core\Router->App\Core\{closure}()
+#7 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#8 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#9 {main}
+
+[25-Sep-2025 07:49:32 UTC] [2025-09-25T07:49:32+00:00] SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`toy_rental`.`products`, CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE) in /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php:123
+Stack trace:
+#0 /srv/code/chirag gohil/toy-rental-core-php/src/Controllers/AdminProductController.php(123): PDOStatement->execute()
+#1 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(54): App\Controllers\AdminProductController->store()
+#2 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(22): App\Core\Router->App\Core\{closure}()
+#3 /srv/code/chirag gohil/toy-rental-core-php/src/Middleware/Auth.php(16): App\Core\Router->App\Core\{closure}()
+#4 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(61): App\Middleware\Auth->__invoke()
+#5 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(27): App\Core\Router->App\Core\{closure}()
+#6 /srv/code/chirag gohil/toy-rental-core-php/src/Core/Router.php(30): App\Core\Router->App\Core\{closure}()
+#7 /srv/code/chirag gohil/toy-rental-core-php/public/index.php(50): App\Core\Router->dispatch()
+#8 /home/anil/.config/composer/vendor/genesisweb/valet-linux-plus/server.php(106): require_once('...')
+#9 {main}
 
