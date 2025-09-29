@@ -37,6 +37,8 @@ $router->add('POST',   '/api/admin/products',               App\Controllers\Admi
 $router->add('GET',    '/api/admin/products/{id}',          App\Controllers\AdminProductController::class.'@show',         [$jwtAuth]);
 $router->add('PUT',    '/api/admin/products/{id}',          App\Controllers\AdminProductController::class.'@update',       [$jwtAuth]);
 $router->add('DELETE', '/api/admin/products/{id}',          App\Controllers\AdminProductController::class.'@destroy',      [$jwtAuth]);
+$router->add('POST', '/api/admin/products/{id}/images', App\Controllers\AdminProductController::class.'@addImages', [$jwtAuth]);
+$router->add('DELETE', '/api/admin/products/{id}/images', App\Controllers\AdminProductController::class.'@deleteImage', [$jwtAuth]);
 
 // Admin: Plans CRUD for a product
 $router->add('POST',   '/api/admin/products/{id}/plans',    App\Controllers\AdminProductController::class.'@addPlan',      [$jwtAuth]);
