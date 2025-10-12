@@ -20,7 +20,6 @@ $router->add('POST', '/api/upload/avatar', ProfileController::class.'@uploadAvat
 
 // Authenticated
 $router->add('GET', '/api/cart',          CartController::class.'@get',              [$jwtAuth]);
-$router->add('GET', '/api/cart',          CartController::class.'@get',              [$jwtAuth]);
 $router->add('POST','/api/cart/items',    CartController::class.'@addItem',          [$jwtAuth]);
 $router->add('DELETE','/api/cart/items/{id}', CartController::class.'@removeItem',   [$jwtAuth]);
 
