@@ -29,7 +29,7 @@ class CartController {
         }
     }
 
-    // Get cart items - FIXED VERSION
+    // Get cart items with plan info
     public function get(Request $r): Response {
         try {
             if (!isset($r->user['sub'])) {
@@ -42,15 +42,16 @@ class CartController {
             $sql = "SELECT
                         ci.id,
                         ci.product_id,
-                        ci.duration_days,
-                        ci.price_inr,
                         ci.start_date,
                         ci.end_date,
+                        ci.plan_id,
                         p.title,
                         p.images_json,
-                        p.rental_options_json
+                        pp.duration_days,
+                        pp.price_inr
                     FROM cart_items ci
                     JOIN products p ON ci.product_id = p.id
+                    JOIN product_plans pp ON ci.plan_id = pp.id
                     WHERE ci.cart_id = ?";
 
             $stmt = $this->db->pdo()->prepare($sql);
@@ -81,6 +82,7 @@ class CartController {
                     'id' => (int)$item['id'],
                     'product_id' => (int)$item['product_id'],
                     'title' => $item['title'],
+                    'plan_id' => (int)$item['plan_id'],
                     'duration_days' => (int)$item['duration_days'],
                     'price_inr' => (float)$item['price_inr'],
                     'start_date' => $item['start_date'],
@@ -117,44 +119,39 @@ class CartController {
 
             $pid = (int)($r->body['product_id'] ?? 0);
             $start = $r->body['start_date'] ?? null;
+            $planId = isset($r->body['plan_id']) ? (int)$r->body['plan_id'] : null;
             $optionIndex = isset($r->body['option_index']) ? (int)$r->body['option_index'] : null;
 
             // Validation
-            if (!$pid || !$start || $optionIndex === null) {
+            if (!$pid || !$start || ($planId === null && $optionIndex === null)) {
                 return Response::json([
-                    'message' => 'product_id, option_index, and start_date are required'
+                    'message' => 'product_id, start_date and plan selection are required'
                 ], 422);
             }
 
-            // Fetch product and rental options
-            $stmt = $this->db->pdo()->prepare("SELECT rental_options_json FROM products WHERE id = ?");
-            $stmt->execute([$pid]);
-            $product = $stmt->fetch(\PDO::FETCH_ASSOC);
+            $pdo = $this->db->pdo();
 
-            if (!$product) {
-                return Response::json(['message' => 'Product not found'], 404);
+            // Determine plan
+            if ($planId === null) {
+                $planLookup = $pdo->prepare("SELECT id FROM product_plans WHERE product_id = ? ORDER BY duration_days");
+                $planLookup->execute([$pid]);
+                $plans = $planLookup->fetchAll(\PDO::FETCH_COLUMN);
+                if (!$plans || !isset($plans[$optionIndex])) {
+                    return Response::json([
+                        'message' => 'Invalid rental option selected'
+                    ], 422);
+                }
+                $planId = (int)$plans[$optionIndex];
             }
 
-            // Decode rental options
-            $rentalOptions = json_decode($product['rental_options_json'] ?? '[]', true);
-
-            if (!is_array($rentalOptions) || empty($rentalOptions)) {
-                return Response::json(['message' => 'No rental options available for this product'], 422);
+            $planStmt = $pdo->prepare("SELECT duration_days, price_inr FROM product_plans WHERE id = ? AND product_id = ?");
+            $planStmt->execute([$planId, $pid]);
+            $plan = $planStmt->fetch(\PDO::FETCH_ASSOC);
+            if (!$plan) {
+                return Response::json(['message' => 'Invalid rental plan configuration'], 422);
             }
-
-            if (!isset($rentalOptions[$optionIndex])) {
-                return Response::json([
-                    'message' => 'Invalid rental option selected',
-                    'available_options' => count($rentalOptions)
-                ], 422);
-            }
-
-            // Get selected plan
-            $plan = $rentalOptions[$optionIndex];
-            $duration = (int)($plan['days'] ?? 0);
-            $price = (float)($plan['price'] ?? 0);
-
-            // Validate plan data
+            $duration = (int)$plan['duration_days'];
+            $price = (int)$plan['price_inr'];
             if ($duration <= 0 || $price <= 0) {
                 return Response::json(['message' => 'Invalid rental plan configuration'], 422);
             }
@@ -169,15 +166,14 @@ class CartController {
             // Insert into cart_items
             $stmt = $this->db->pdo()->prepare("
                 INSERT INTO cart_items
-                (cart_id, product_id, duration_days, price_inr, start_date, end_date)
-                VALUES (?, ?, ?, ?, ?, ?)
+                (cart_id, product_id, plan_id, start_date, end_date)
+                VALUES (?, ?, ?, ?, ?)
             ");
 
             $stmt->execute([
                 $cid,
                 $pid,
-                $duration,
-                $price,
+                $planId,
                 $start,
                 $end
             ]);
@@ -185,7 +181,9 @@ class CartController {
             return Response::json([
                 'success' => true,
                 'message' => 'Item added to cart successfully',
-                'cart_item_id' => (int)$this->db->pdo()->lastInsertId()
+                'cart_item_id' => (int)$this->db->pdo()->lastInsertId(),
+                'plan_id' => $planId,
+                'price_inr' => $price
             ]);
 
         } catch (\Exception $e) {

@@ -13,7 +13,7 @@ class AdminController {
     public function orders(Request $r): Response {
         if (!$this->isAdmin($r->user)) return Response::json(['message'=>'Forbidden'],403);
         $status = $r->query['status'] ?? null;
-        $sql = "SELECT id,user_id,status,total_due,placed_at FROM orders";
+        $sql = "SELECT id,order_number,user_id,status,total_due,placed_at FROM orders";
         $params = [];
         if ($status) { $sql .= " WHERE status=?"; $params[]=$status; }
         $sql .= " ORDER BY id DESC LIMIT 100";
@@ -28,6 +28,14 @@ class AdminController {
         $pdo = $this->db->pdo();
         $pdo->beginTransaction();
         try{
+            $metaStmt = $pdo->prepare("SELECT order_number FROM orders WHERE id=? LIMIT 1");
+            $metaStmt->execute([$id]);
+            $meta = $metaStmt->fetch();
+            if (!$meta) {
+                throw new \Exception('Order not found');
+            }
+            $orderNumber = $meta['order_number'];
+
             // Fetch items for the order
             $items = $pdo->prepare("SELECT oi.id, oi.product_id, oi.start_date, oi.end_date FROM order_items oi WHERE oi.order_id=?");
             $items->execute([$id]);
@@ -56,7 +64,7 @@ class AdminController {
             }
             $pdo->prepare("UPDATE orders SET status='CONFIRMED' WHERE id=?")->execute([$id]);
             $pdo->commit();
-            return Response::json(['order_id'=>$id,'status'=>'CONFIRMED']);
+            return Response::json(['order_id'=>$id,'order_number'=>$orderNumber,'status'=>'CONFIRMED']);
         } catch(\Throwable $e){
             $pdo->rollBack();
             return Response::json(['message'=>'Confirm failed','error'=>$e->getMessage()],400);
@@ -66,7 +74,11 @@ class AdminController {
     public function markDelivered(Request $r): Response {
         if (!$this->isAdmin($r->user)) return Response::json(['message'=>'Forbidden'],403);
         $id = (int)($r->params['id'] ?? 0);
-        $this->db->pdo()->prepare("UPDATE orders SET status='DELIVERED' WHERE id=? AND status='CONFIRMED'")->execute([$id]);
-        return Response::json(['order_id'=>$id,'status'=>'DELIVERED']);
+        $pdo = $this->db->pdo();
+        $pdo->prepare("UPDATE orders SET status='DELIVERED' WHERE id=? AND status='CONFIRMED'")->execute([$id]);
+        $meta = $pdo->prepare("SELECT order_number FROM orders WHERE id=? LIMIT 1");
+        $meta->execute([$id]);
+        $orderNumber = $meta->fetchColumn() ?: null;
+        return Response::json(['order_id'=>$id,'order_number'=>$orderNumber,'status'=>'DELIVERED']);
     }
 }
