@@ -131,35 +131,56 @@ class CartController {
 
             $pdo = $this->db->pdo();
 
-            // Determine plan
-            if ($planId === null) {
-                $planLookup = $pdo->prepare("SELECT id FROM product_plans WHERE product_id = ? ORDER BY duration_days");
-                $planLookup->execute([$pid]);
-                $plans = $planLookup->fetchAll(\PDO::FETCH_COLUMN);
-                if (!$plans || !isset($plans[$optionIndex])) {
-                    return Response::json([
-                        'message' => 'Invalid rental option selected'
-                    ], 422);
+            $planDuration = null;
+            $planPrice = null;
+
+            if ($planId !== null) {
+                $planStmt = $pdo->prepare("SELECT duration_days, price_inr FROM product_plans WHERE id = ? AND product_id = ?");
+                $planStmt->execute([$planId, $pid]);
+                $plan = $planStmt->fetch(\PDO::FETCH_ASSOC);
+                if (!$plan) {
+                    return Response::json(['message' => 'Invalid rental plan configuration'], 422);
                 }
-                $planId = (int)$plans[$optionIndex];
+                $planDuration = (int)$plan['duration_days'];
+                $planPrice = (int)$plan['price_inr'];
+            } else {
+                $productStmt = $pdo->prepare("SELECT rental_options_json FROM products WHERE id = ?");
+                $productStmt->execute([$pid]);
+                $product = $productStmt->fetch(\PDO::FETCH_ASSOC);
+                if (!$product) {
+                    return Response::json(['message' => 'Product not found'], 404);
+                }
+                $options = json_decode($product['rental_options_json'] ?? '[]', true);
+                if (!is_array($options) || !isset($options[$optionIndex])) {
+                    return Response::json(['message' => 'Invalid rental option selected'], 422);
+                }
+                $selected = $options[$optionIndex];
+                $planDuration = isset($selected['days']) ? (int)$selected['days'] : 0;
+                $planPrice = isset($selected['price']) ? (int)$selected['price'] : 0;
+                if ($planDuration <= 0 || $planPrice <= 0) {
+                    return Response::json(['message' => 'Invalid rental option selected'], 422);
+                }
+
+                $ensure = $pdo->prepare("SELECT id FROM product_plans WHERE product_id=? AND duration_days=? AND price_inr=? LIMIT 1");
+                $ensure->execute([$pid, $planDuration, $planPrice]);
+                $existingPlanId = $ensure->fetchColumn();
+                if ($existingPlanId) {
+                    $planId = (int)$existingPlanId;
+                } else {
+                    $insertPlan = $pdo->prepare("INSERT INTO product_plans(product_id,duration_days,price_inr) VALUES (?,?,?)");
+                    $insertPlan->execute([$pid, $planDuration, $planPrice]);
+                    $planId = (int)$pdo->lastInsertId();
+                }
             }
 
-            $planStmt = $pdo->prepare("SELECT duration_days, price_inr FROM product_plans WHERE id = ? AND product_id = ?");
-            $planStmt->execute([$planId, $pid]);
-            $plan = $planStmt->fetch(\PDO::FETCH_ASSOC);
-            if (!$plan) {
-                return Response::json(['message' => 'Invalid rental plan configuration'], 422);
-            }
-            $duration = (int)$plan['duration_days'];
-            $price = (int)$plan['price_inr'];
-            if ($duration <= 0 || $price <= 0) {
+            if ($planDuration <= 0 || $planPrice <= 0) {
                 return Response::json(['message' => 'Invalid rental plan configuration'], 422);
             }
 
             // Calculate end date
             $startDate = new \DateTime($start);
             $endDate = clone $startDate;
-            $endDate->modify("+".($duration - 1)." days");
+            $endDate->modify("+".($planDuration - 1)." days");
 
             $end = $endDate->format('Y-m-d');
 
@@ -183,7 +204,8 @@ class CartController {
                 'message' => 'Item added to cart successfully',
                 'cart_item_id' => (int)$this->db->pdo()->lastInsertId(),
                 'plan_id' => $planId,
-                'price_inr' => $price
+                'price_inr' => $planPrice,
+                'duration_days' => $planDuration
             ]);
 
         } catch (\Exception $e) {
