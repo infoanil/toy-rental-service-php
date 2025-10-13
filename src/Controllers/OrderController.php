@@ -80,11 +80,12 @@ class OrderController {
             $pdo->commit();
 
             return Response::json([
+                'success' => true,
                 'order_id' => $orderId,
                 'order_number' => $orderNumber,
                 'status' => 'PLACED',
                 'total_due' => $total
-            ], 201);
+            ], 200);
         } catch (\Throwable $e) {
             $pdo->rollBack();
             return Response::json([
@@ -109,14 +110,24 @@ class OrderController {
         $uid = (int)$r->user['sub'];
         $id = (int)($r->params['id'] ?? 0);
         $pdo = $this->db->pdo();
+
+        // Fetch order
         $o = $pdo->prepare("
             SELECT id, order_number, status, payment_mode, delivery_fee, total_due, placed_at
             FROM orders
             WHERE id=? AND user_id=?
         ");
-        $o->execute([$id,$uid]);
+        $o->execute([$id, $uid]);
         $order = $o->fetch();
-        if (!$order) return Response::json(['message'=>'Not found'],404);
+
+        if (!$order) {
+            return Response::json([
+                'success' => false,
+                'message' => 'Order not found'
+            ], 404);
+        }
+
+        // Fetch order items (including product images)
         $it = $pdo->prepare("
             SELECT
                 oi.id,
@@ -126,21 +137,80 @@ class OrderController {
                 oi.end_date,
                 oi.item_price,
                 p.title,
+                p.images_json,              -- ✅ include the images JSON
                 pp.duration_days
             FROM order_items oi
-            JOIN products p ON p.id=oi.product_id
-            JOIN product_plans pp ON pp.id=oi.plan_id
-            WHERE order_id=?
+            JOIN products p ON p.id = oi.product_id
+            JOIN product_plans pp ON pp.id = oi.plan_id
+            WHERE order_id = ?
         ");
         $it->execute([$id]);
-        $order['items'] = $it->fetchAll();
-        return Response::json($order);
+        $items = $it->fetchAll(\PDO::FETCH_ASSOC);
+
+        // Decode images for each product
+        foreach ($items as &$item) {
+            $item['images'] = json_decode($item['images_json'] ?? '[]', true) ?: [];
+            unset($item['images_json']);
+        }
+
+        $order['items'] = $items;
+
+        return Response::json([
+            'success' => true,
+            'order' => $order
+        ], 200);
     }
-    public function cancel(Request $r): Response {
-        $uid = (int)$r->user['sub'];
-        $id = (int)($r->params['id'] ?? 0);
-        $pdo = $this->db->pdo();
-        $pdo->prepare("UPDATE orders SET status='CANCELLED' WHERE id=? AND user_id=? AND status='PLACED'")->execute([$id,$uid]);
-        return Response::json(['message'=>'Cancelled if eligible']);
-    }
+
+
+   public function cancel(Request $r): Response {
+       $uid = (int)$r->user['sub'];
+       $id = (int)($r->params['id'] ?? 0);
+       $pdo = $this->db->pdo();
+
+       try {
+           // Check if order exists and belongs to the user
+           $stmt = $pdo->prepare("SELECT id, status FROM orders WHERE id=? AND user_id=? LIMIT 1");
+           $stmt->execute([$id, $uid]);
+           $order = $stmt->fetch();
+
+           if (!$order) {
+               return Response::json([
+                   'success' => false,
+                   'message' => 'Order not found or unauthorized access.'
+               ], 404);
+           }
+
+           // Only allow cancelling if status is PLACED
+           if ($order['status'] !== 'PLACED') {
+               return Response::json([
+                   'success' => false,
+                   'message' => 'Only orders with status "PLACED" can be cancelled.'
+               ], 400);
+           }
+
+           $pdo->beginTransaction();
+
+           // Update status
+           $update = $pdo->prepare("UPDATE orders SET status='CANCELLED' WHERE id=? AND user_id=?");
+           $update->execute([$id, $uid]);
+
+           $pdo->commit();
+
+           return Response::json([
+               'success' => true,
+               'message' => 'Order cancelled successfully.',
+               'order_id' => $id,
+               'status' => 'CANCELLED'
+           ], 200);
+
+       } catch (\Throwable $e) {
+           $pdo->rollBack();
+           return Response::json([
+               'success' => false,
+               'message' => 'Failed to cancel order.',
+               'error' => $e->getMessage()
+           ], 500);
+       }
+   }
+
 }
