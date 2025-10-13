@@ -134,3 +134,7 @@ ALTER TABLE users
 ALTER TABLE products
   ADD COLUMN actual_price   INT NOT NULL DEFAULT 0 AFTER description,
   ADD COLUMN discount_price INT NULL AFTER actual_price;
+
+ALTER TABLE cart_items ADD COLUMN plan_id INT NULL;
+ALTER TABLE orders ADD COLUMN order_number VARCHAR(100) NOT NULL;
+ALTER TABLE orders MODIFY address_id INT NULL;
