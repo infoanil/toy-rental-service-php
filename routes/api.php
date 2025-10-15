@@ -52,6 +52,13 @@ $router->add('DELETE', '/api/admin/units/{unitId}',         App\Controllers\Admi
 $router->add('GET', '/api/admin/orders',                AdminController::class.'@orders',         [$jwtAuth]);
 $router->add('POST','/api/admin/orders/{id}/confirm',   AdminController::class.'@confirm',        [$jwtAuth]);
 $router->add('POST','/api/admin/orders/{id}/delivered', AdminController::class.'@markDelivered',  [$jwtAuth]);
+$router->add('DELETE', '/api/admin/orders/{id}',        AdminController::class.'@deleteOrder',    [$jwtAuth]);
+$router->add('POST',   '/api/admin/orders/delete-multiple', AdminController::class.'@deleteOrders', [$jwtAuth]);
+$router->add('GET', '/api/admin/users', App\Controllers\AdminController::class.'@users', [$jwtAuth]);
+$router->add('DELETE', '/api/admin/users/{id}', App\Controllers\AdminController::class.'@deleteUser', [$jwtAuth]);
+$router->add('PUT', '/api/admin/users/{id}', AdminController::class.'@updateUser', [$jwtAuth]);
 
+// Admin: Dashboard counts
+$router->add('GET', '/api/admin/stats', App\Controllers\AdminController::class.'@stats', [$jwtAuth]);
 $router->add('GET','/api/addresses', App\Controllers\AddressController::class.'@list', [$jwtAuth]);
 $router->add('POST','/api/addresses', App\Controllers\AddressController::class.'@store', [$jwtAuth]);

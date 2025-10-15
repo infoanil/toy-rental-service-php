@@ -33,7 +33,7 @@ class AdminController {
         return Response::json($stmt->fetchAll());
     }
 
-    // Confirm an order
+    // Confirm an order (inventory check removed)
     public function confirm(Request $r): Response {
         if (!$this->isAdmin($r->user))
             return Response::json(['message'=>'Forbidden'],403);
@@ -59,61 +59,17 @@ class AdminController {
             $orderNumber = $meta['order_number'];
 
             // Fetch order items
-            $itemsStmt = $pdo->prepare("SELECT id, product_id, start_date, end_date FROM order_items WHERE order_id=?");
+            $itemsStmt = $pdo->prepare("SELECT id FROM order_items WHERE order_id=?");
             $itemsStmt->execute([$id]);
             $items = $itemsStmt->fetchAll();
 
-            if (!$items) {
-                throw new \Exception('Order has no items');
-            }
-
-            $buffer = (int)env('BUFFER_DAYS',1);
-
-            // Allocate inventory
+            // Skip inventory allocation completely
             foreach ($items as $item) {
-                $endBuf = date('Y-m-d', strtotime($item['end_date'] . " +{$buffer} days"));
-
-                $lockStmt = $pdo->prepare("
-                    SELECT iu.id
-                    FROM inventory_units iu
-                    WHERE iu.product_id = :pid
-                    AND NOT EXISTS (
-                        SELECT 1
-                        FROM availability_blocks ab
-                        WHERE ab.inventory_unit_id = iu.id
-                          AND ab.start_date <= :end_buf
-                          AND ab.end_date >= :start
-                    )
-                    LIMIT 1 FOR UPDATE
-                ");
-                $lockStmt->execute([
-                    ':pid' => $item['product_id'],
-                    ':start' => $item['start_date'],
-                    ':end_buf' => $endBuf
-                ]);
-
-                $unit = $lockStmt->fetch();
-
-                if (!$unit) {
-                    throw new \Exception(
-                        "No available inventory for product {$item['product_id']} " .
-                        "from {$item['start_date']} to {$endBuf}"
-                    );
-                }
-
-                // Assign unit to order item
-                $pdo->prepare("UPDATE order_items SET inventory_unit_id=? WHERE id=?")
-                    ->execute([$unit['id'], $item['id']]);
-
-                // Block inventory
-                $pdo->prepare("
-                    INSERT INTO availability_blocks(
-                        inventory_unit_id, start_date, end_date, type, order_id
-                    ) VALUES (?, ?, ?, 'RENTAL', ?)
-                ")->execute([$unit['id'], $item['start_date'], $endBuf, $id]);
+                $pdo->prepare("UPDATE order_items SET inventory_unit_id=NULL WHERE id=?")
+                    ->execute([$item['id']]);
             }
 
-            // Update order status
+            // Update order status to CONFIRMED
             $pdo->prepare("UPDATE orders SET status='CONFIRMED' WHERE id=?")->execute([$id]);
             $pdo->commit();
 
@@ -151,4 +107,125 @@ class AdminController {
             'status'=>'DELIVERED'
         ]);
     }
+
+// Delete a single order
+public function deleteOrder(Request $r): Response {
+    if (!$this->isAdmin($r->user)) {
+        return Response::json(['message'=>'Forbidden'],403);
+    }
+
+    $id = (int)($r->params['id'] ?? 0);
+    if (!$id) {
+        return Response::json(['message'=>'Order ID required'], 400);
+    }
+
+    $pdo = $this->db->pdo();
+
+    // Optional: check if order exists
+    $stmt = $pdo->prepare("SELECT id FROM orders WHERE id=? LIMIT 1");
+    $stmt->execute([$id]);
+    if (!$stmt->fetch()) {
+        return Response::json(['message'=>'Order not found'], 404);
+    }
+
+    // Delete order items first (foreign key safety)
+    $pdo->prepare("DELETE FROM order_items WHERE order_id=?")->execute([$id]);
+
+    // Delete the order
+    $pdo->prepare("DELETE FROM orders WHERE id=?")->execute([$id]);
+
+    return Response::json(['message'=>"Order $id deleted successfully"]);
+}
+
+public function deleteOrders(Request $r): Response {
+    if (!$this->isAdmin($r->user)) {
+        return Response::json(['message'=>'Forbidden'],403);
+    }
+
+    $ids = $r->body['ids'] ?? [];
+    if (!is_array($ids) || empty($ids)) {
+        return Response::json(['message'=>'Array of order IDs required'], 400);
+    }
+
+    $pdo = $this->db->pdo();
+
+    // Delete order items first
+    $inPlaceholders = implode(',', array_fill(0, count($ids), '?'));
+    $pdo->prepare("DELETE FROM order_items WHERE order_id IN ($inPlaceholders)")->execute($ids);
+
+    // Delete orders
+    $pdo->prepare("DELETE FROM orders WHERE id IN ($inPlaceholders)")->execute($ids);
+
+    return Response::json(['message'=> count($ids) . " orders deleted successfully"]);
+}
+
+// In AdminController.php
+public function users(Request $r): Response {
+    if (!$this->isAdmin($r->user)) return Response::json(['message'=>'Forbidden'],403);
+
+    $stmt = $this->db->pdo()->query("SELECT id, name, email, role FROM users ORDER BY id DESC");
+    return Response::json($stmt->fetchAll());
+}
+
+// Delete a user
+public function deleteUser(Request $r): Response {
+    if (!$this->isAdmin($r->user)) return Response::json(['message'=>'Forbidden'],403);
+
+    $id = (int)($r->params['id'] ?? 0);
+    $stmt = $this->db->pdo()->prepare("DELETE FROM users WHERE id=? AND role!='admin'");
+    $stmt->execute([$id]);
+
+    return Response::json(['message'=>"User {$id} deleted"]);
+}
+
+// Dashboard stats
+public function stats(Request $r): Response {
+    if (!$this->isAdmin($r->user)) return Response::json(['message'=>'Forbidden'],403);
+
+    $pdo = $this->db->pdo();
+
+    $products = $pdo->query("SELECT COUNT(*) FROM products")->fetchColumn();
+    $orders   = $pdo->query("SELECT COUNT(*) FROM orders")->fetchColumn();
+    $users    = $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
+
+    return Response::json([
+        'totalProducts' => (int)$products,
+        'totalOrders'   => (int)$orders,
+        'totalUsers'    => (int)$users,
+    ]);
+}
+
+// AdminController.php
+public function updateUser(Request $request, Response $response, array $args)
+{
+    $userId = $args['id'] ?? null;
+    if (!$userId) {
+        return $response->json(['message' => 'User ID required'], 400);
+    }
+
+    $user = $this->db->table('users')->find($userId);
+    if (!$user) {
+        return $response->json(['message' => 'User not found'], 404);
+    }
+
+    $data = $request->getBody(); // expect name, email, role
+
+    // Validate data
+    if (isset($data['email']) && !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+        return $response->json(['message' => 'Invalid email'], 400);
+    }
+    if (isset($data['role']) && !in_array($data['role'], ['User','Admin'])) {
+        return $response->json(['message' => 'Invalid role'], 400);
+    }
+
+    $updatedUser = $this->db->table('users')->update($userId, [
+        'name'  => $data['name'] ?? $user['name'],
+        'email' => $data['email'] ?? $user['email'],
+        'role'  => $data['role'] ?? $user['role'],
+    ]);
+
+    return $response->json(['message' => 'User updated', 'user' => $updatedUser]);
+}
+
+
 }
