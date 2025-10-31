@@ -18,20 +18,37 @@ class AdminController {
             return Response::json(['message'=>'Forbidden'],403);
 
         $status = $r->query['status'] ?? null;
-        $sql = "SELECT id, order_number, user_id, status, total_due, placed_at FROM orders";
         $params = [];
 
+        $sql = "
+            SELECT
+                o.id,
+                o.order_number,
+                o.user_id,
+                o.status,
+                o.total_due,
+                o.placed_at,
+                u.name AS user_name,
+                u.email AS user_email,
+                u.role AS user_role
+            FROM orders o
+            JOIN users u ON u.id = o.user_id
+        ";
+
         if ($status) {
-            $sql .= " WHERE status=?";
+            $sql .= " WHERE o.status=?";
             $params[] = $status;
         }
 
-        $sql .= " ORDER BY id DESC LIMIT 100";
+        $sql .= " ORDER BY o.id DESC LIMIT 100";
+
         $stmt = $this->db->pdo()->prepare($sql);
         $stmt->execute($params);
+        $orders = $stmt->fetchAll();
 
-        return Response::json($stmt->fetchAll());
+        return Response::json($orders);
     }
+
 
     // Confirm an order (inventory check removed)
     public function confirm(Request $r): Response {
